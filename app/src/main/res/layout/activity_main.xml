@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context=".MainActivity">
+
+
+
+    <LinearLayout
+            android:id="@+id/images_linear_layout"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+            android:layout_marginTop="10dp"
+    >
+        <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Image URL"
+                android:id="@+id/image_url_field"
+                android:imeOptions="actionDone"
+                android:inputType="textUri"
+                android:layout_margin="10dp"
+        />
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/or_tv"
+                android:textAlignment="center"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:elevation="2dp"
+        />
+
+        <Button
+                android:id="@+id/choose_image_from_gallery_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/choose_from_gallery_btn"
+                android:layout_gravity="center"
+                android:elevation="2dp"
+                android:stateListAnimator="@drawable/simple_animator"
+        />
+
+        <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:id="@+id/image_holder"
+                android:scaleType="centerInside"
+                android:elevation="2dp"
+        />
+
+        <EditText
+                android:id="@+id/detected_text_et"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:editable="false"
+        />
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+            android:elevation="2dp"
+            android:layout_alignBottom="@+id/images_linear_layout"
+    >
+        <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="@string/text_button"
+                android:onClick="recognizeText"
+                android:stateListAnimator="@drawable/simple_animator"
+        />
+        <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="@string/copy_button"
+                android:onClick="copyText"
+                android:stateListAnimator="@drawable/simple_animator"
+        />
+    </LinearLayout>
+
+</RelativeLayout>
