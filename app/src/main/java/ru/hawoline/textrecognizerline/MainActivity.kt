@@ -10,17 +10,19 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.Bundle
+import android.view.GestureDetector
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
+import com.google.firebase.ml.vision.text.FirebaseVisionCloudTextRecognizerOptions
+import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.ctx
 import java.lang.Exception
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -60,53 +62,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun recognizeText(view: View) {
-        if (image_holder.drawable == null){
-            Toast.makeText(this, R.string.image_null, Toast.LENGTH_LONG).show()
-            return
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE){
+            image_holder.setImageURI(data?.data)
         }
-        val textImage = FirebaseVisionImage.fromBitmap(
-            (image_holder.drawable as BitmapDrawable).bitmap
-        )
-
-        val detector = FirebaseVision.getInstance().onDeviceTextRecognizer
-
-        var detectedText = ""
-        detector.processImage(textImage).addOnSuccessListener { firebaseVisionText ->
-            for (block in firebaseVisionText.textBlocks) {
-
-                for (line in block.lines) {
-                    val lineText = line.text
-
-                    detectedText += lineText + "\n"
-                }
-            }
-
-            detected_text_et.setText(detectedText)
-        }
-
-
-
-        detector.close()
-    }
-    fun copyText(view: View) {
-        val clipboardService = getSystemService(Context.CLIPBOARD_SERVICE)
-        val clipboardManager: ClipboardManager = clipboardService as ClipboardManager
-        val srcText: String = detected_text_et.getText().toString()
-
-        val clipData = ClipData.newPlainText("Source Text", srcText)
-        clipboardManager.setPrimaryClip(clipData)
-    }
-
-    private fun pickImageFromGallery() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        startActivityForResult(intent, IMAGE_PICK_CODE)
-    }
-
-    companion object {
-        private const val IMAGE_PICK_CODE = 1000;
-        private const val PERMISSION_CODE = 1001;
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -125,10 +85,75 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE){
-            image_holder.setImageURI(data?.data)
+    companion object {
+        private const val IMAGE_PICK_CODE = 1000;
+
+        private const val PERMISSION_CODE = 1001;
+
+    }
+
+    fun onTextRecognized(view: View) {
+        if (image_holder.drawable == null){
+            Toast.makeText(this, R.string.image_null, Toast.LENGTH_LONG).show()
+            return
         }
+
+        recognizeTextFromDevice()
+    }
+    fun copyText(view: View) {
+        val clipboardService = getSystemService(Context.CLIPBOARD_SERVICE)
+        val clipboardManager: ClipboardManager = clipboardService as ClipboardManager
+        val srcText: String = detected_text_et.text.toString()
+
+        val clipData = ClipData.newPlainText("Source Text", srcText)
+        clipboardManager.setPrimaryClip(clipData)
+    }
+
+    private fun pickImageFromGallery() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, IMAGE_PICK_CODE)
+    }
+
+    fun recognizeText(detector: FirebaseVisionTextRecognizer, image:FirebaseVisionImage){
+        var detectedText = ""
+        detector.processImage(image).addOnSuccessListener { firebaseVisionText ->
+            for (block in firebaseVisionText.textBlocks) {
+
+                for (line in block.lines) {
+                    val lineText = line.text
+
+                    detectedText += lineText + "\n"
+                }
+            }
+
+            detected_text_et.setText(detectedText)
+        }
+
+        detector.close()
+    }
+
+    fun recognizeTextFromDevice(){
+        val textImage = FirebaseVisionImage.fromBitmap(
+            (image_holder.drawable as BitmapDrawable).bitmap
+        )
+
+        val detector = FirebaseVision.getInstance().onDeviceTextRecognizer
+
+        recognizeText(detector, textImage)
+    }
+
+    fun recognizeTextFromCloud(){
+        val textImage = FirebaseVisionImage.fromBitmap(
+            (image_holder.drawable as BitmapDrawable).bitmap
+        )
+
+        val options = FirebaseVisionCloudTextRecognizerOptions.Builder()
+            .setLanguageHints(listOf("en", "ru"))
+            .build()
+
+        val detector = FirebaseVision.getInstance().getCloudTextRecognizer(options)
+
+        recognizeText(detector, textImage)
     }
 }
