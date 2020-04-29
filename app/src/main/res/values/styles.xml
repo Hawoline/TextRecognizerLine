@@ -1,11 +1,18 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
+    </style>
+    
+    <style name="RoundedCornerButton" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:background">@drawable/button_rounded_corner</item>
+        <item name="android:colorButtonNormal">#1a237e</item>
+        <item name="android:colorControlHighlight">#673ab7</item>
     </style>
 
 </resources>

@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Распознаватель текста</string>
+    <string name="text_button">Определить текст</string>
+    <string name="copy_button">Копировать текст</string>
+    <string name="image_null">Фото не выбрано</string>
+    <string name="image_not_loaded">Фото не загружено</string>
+    <string name="image_url">URL фото</string>
+    <string name="image_for_recognition">Картинка для распознавания</string>
+    <string name="text_copy_success">Текст скопирован в буфер обмена</string>
+</resources>

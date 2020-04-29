@@ -10,62 +10,51 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.Bundle
-import android.view.GestureDetector
+import android.util.Log
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
-import com.google.firebase.ml.vision.text.FirebaseVisionCloudTextRecognizerOptions
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
-import org.jetbrains.anko.ctx
-import java.lang.Exception
+import ru.hawoline.textrecognizerline.util.Updater
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        image_url_field.setOnEditorActionListener{ _, action, _ ->
-            if(action == EditorInfo.IME_ACTION_DONE){
-
-                try {
-                    Picasso.with(ctx).load(image_url_field.text.toString()).into(image_holder)
-                } catch (e: Exception){
-                    Toast.makeText(this, R.string.image_not_loaded, Toast.LENGTH_LONG).show()
-                }
-
-                true
-            }
-
-            false
-        }
+        Updater.getInstance().createUpdateManager(applicationContext)
+        Updater.getInstance().checkForUpdates(this)
 
         choose_image_from_gallery_btn.setOnClickListener{
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
                 if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) ==
                     PackageManager.PERMISSION_DENIED){
-                    val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE);
-                    requestPermissions(permissions, PERMISSION_CODE);
+                    val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    requestPermissions(permissions, PERMISSION_CODE)
                 }
-                else{
-                    pickImageFromGallery();
+                else {
+                    pickImageFromGallery()
                 }
-            }
-            else{
-                pickImageFromGallery();
             }
         }
-    }
 
+        detected_text_view.setOnClickListener {
+            copyTextToClipBoard()
+            Toast.makeText(this, getString(R.string.text_copy_success), Toast.LENGTH_SHORT).show()
+        }
+    }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE){
+        if (resultCode == RESULT_OK && requestCode == IMAGE_PICK_CODE){
             image_holder.setImageURI(data?.data)
+        }
+        if (requestCode == Updater.UPDATE_REQUEST) {
+            if (resultCode != RESULT_OK) {
+                Log.d("LOG", "Update not installed")
+            }
         }
     }
 
@@ -86,10 +75,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val IMAGE_PICK_CODE = 1000;
-
-        private const val PERMISSION_CODE = 1001;
-
+        private const val IMAGE_PICK_CODE = 1000
+        private const val PERMISSION_CODE = 1001
     }
 
     fun onTextRecognized(view: View) {
@@ -100,10 +87,16 @@ class MainActivity : AppCompatActivity() {
 
         recognizeTextFromDevice()
     }
+
     fun copyText(view: View) {
+        copyTextToClipBoard()
+        Toast.makeText(this, getString(R.string.text_copy_success), Toast.LENGTH_SHORT).show()
+    }
+
+    private fun copyTextToClipBoard() {
         val clipboardService = getSystemService(Context.CLIPBOARD_SERVICE)
         val clipboardManager: ClipboardManager = clipboardService as ClipboardManager
-        val srcText: String = detected_text_et.text.toString()
+        val srcText: String = detected_text_view.text.toString()
 
         val clipData = ClipData.newPlainText("Source Text", srcText)
         clipboardManager.setPrimaryClip(clipData)
@@ -115,44 +108,30 @@ class MainActivity : AppCompatActivity() {
         startActivityForResult(intent, IMAGE_PICK_CODE)
     }
 
-    fun recognizeText(detector: FirebaseVisionTextRecognizer, image:FirebaseVisionImage){
-        var detectedText = ""
+    private fun recognizeText(detector: FirebaseVisionTextRecognizer, image:FirebaseVisionImage){
+        val detectedText = StringBuilder()
         detector.processImage(image).addOnSuccessListener { firebaseVisionText ->
             for (block in firebaseVisionText.textBlocks) {
 
                 for (line in block.lines) {
-                    val lineText = line.text
-
-                    detectedText += lineText + "\n"
+                    detectedText.append(line.text).append("\n")
                 }
+
+                detectedText.append("\n")
             }
 
-            detected_text_et.setText(detectedText)
+            detected_text_view.text = detectedText.toString()
         }
 
         detector.close()
     }
 
-    fun recognizeTextFromDevice(){
+    private fun recognizeTextFromDevice(){
         val textImage = FirebaseVisionImage.fromBitmap(
             (image_holder.drawable as BitmapDrawable).bitmap
         )
 
         val detector = FirebaseVision.getInstance().onDeviceTextRecognizer
-
-        recognizeText(detector, textImage)
-    }
-
-    fun recognizeTextFromCloud(){
-        val textImage = FirebaseVisionImage.fromBitmap(
-            (image_holder.drawable as BitmapDrawable).bitmap
-        )
-
-        val options = FirebaseVisionCloudTextRecognizerOptions.Builder()
-            .setLanguageHints(listOf("en", "ru"))
-            .build()
-
-        val detector = FirebaseVision.getInstance().getCloudTextRecognizer(options)
 
         recognizeText(detector, textImage)
     }

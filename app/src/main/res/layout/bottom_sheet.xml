@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:id="@+id/bottom_sheet"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@android:color/white"
+              android:orientation="vertical"
+              app:behavior_hideable="false"
+              app:behavior_peekHeight="@dimen/bottom_sheet_peek_height"
+              app:layout_behavior="@string/bottom_sheet_behavior"
+>
+
+<!--    <TextView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="@dimen/bottom_sheet_peek_height"-->
+<!--            android:background="@color/colorAccent"-->
+<!--            android:gravity="center"-->
+<!--            android:text="@string/bottom_sheet_peek"-->
+<!--            android:drawableTop="@drawable/ic_eject_24dp"-->
+<!--            android:textColor="@android:color/white" />-->
+    <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/bottom_sheet_peek_height"
+            android:background="@color/colorAccent"
+            android:src="@drawable/ic_eject_24dp"
+            android:contentDescription="@null"/>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+    >
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="@string/text_button"
+                android:onClick="onTextRecognized"
+                android:textAllCaps="false"
+                style="@style/RoundedCornerButton"
+        />
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="@string/copy_button"
+                android:onClick="copyText"
+                android:textAllCaps="false"
+                style="@style/RoundedCornerButton"
+        />
+    </LinearLayout>
+
+</LinearLayout>
