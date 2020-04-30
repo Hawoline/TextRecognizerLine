@@ -85,7 +85,7 @@ class MainActivity : Activity() {
             return
         }
 
-        recognizeTextFromDevice()
+        recognizeTextFromCloud()
     }
 
     fun copyText(view: View) {
@@ -132,6 +132,16 @@ class MainActivity : Activity() {
         )
 
         val detector = FirebaseVision.getInstance().onDeviceTextRecognizer
+
+        recognizeText(detector, textImage)
+    }
+
+    private fun recognizeTextFromCloud() {
+        val textImage = FirebaseVisionImage.fromBitmap(
+            (image_holder.drawable as BitmapDrawable).bitmap
+        )
+
+        val detector = FirebaseVision.getInstance().cloudTextRecognizer
 
         recognizeText(detector, textImage)
     }
