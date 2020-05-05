@@ -15,8 +15,8 @@ import android.view.View
 import android.widget.Toast
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
-import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer
 import kotlinx.android.synthetic.main.activity_main.*
+import ru.hawoline.textrecognizerline.util.TextProcessor
 import ru.hawoline.textrecognizerline.util.Updater
 
 class MainActivity : Activity() {
@@ -59,7 +59,7 @@ class MainActivity : Activity() {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        when(requestCode){
+        when(requestCode) {
             PERMISSION_CODE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] ==
                     PackageManager.PERMISSION_GRANTED){
@@ -74,12 +74,7 @@ class MainActivity : Activity() {
         }
     }
 
-    companion object {
-        private const val IMAGE_PICK_CODE = 1000
-        private const val PERMISSION_CODE = 1001
-    }
-
-    fun onTextRecognized(view: View) {
+    fun recognizeText(view: View) {
         if (image_holder.drawable == null){
             Toast.makeText(this, R.string.image_null, Toast.LENGTH_LONG).show()
             return
@@ -108,41 +103,23 @@ class MainActivity : Activity() {
         startActivityForResult(intent, IMAGE_PICK_CODE)
     }
 
-    private fun recognizeText(detector: FirebaseVisionTextRecognizer, image:FirebaseVisionImage){
-        val detectedText = StringBuilder()
-        detector.processImage(image).addOnSuccessListener { firebaseVisionText ->
-            for (block in firebaseVisionText.textBlocks) {
+    private fun recognizeTextFromCloud() {
+        val detector = FirebaseVision.getInstance().cloudTextRecognizer
+        val textImage = FirebaseVisionImage.fromBitmap((image_holder.drawable as BitmapDrawable).bitmap)
 
-                for (line in block.lines) {
-                    detectedText.append(line.text).append("\n")
-                }
-
-                detectedText.append("\n")
+        detector.processImage(textImage)
+            .addOnSuccessListener { firebaseVisionText ->
+                detected_text_view.text = TextProcessor.process(firebaseVisionText)
             }
-
-            detected_text_view.text = detectedText.toString()
-        }
+            .addOnFailureListener{ e ->
+                Toast.makeText(this, R.string.text_recognition_failed, Toast.LENGTH_SHORT).show()
+            }
 
         detector.close()
     }
 
-    private fun recognizeTextFromDevice(){
-        val textImage = FirebaseVisionImage.fromBitmap(
-            (image_holder.drawable as BitmapDrawable).bitmap
-        )
-
-        val detector = FirebaseVision.getInstance().onDeviceTextRecognizer
-
-        recognizeText(detector, textImage)
-    }
-
-    private fun recognizeTextFromCloud() {
-        val textImage = FirebaseVisionImage.fromBitmap(
-            (image_holder.drawable as BitmapDrawable).bitmap
-        )
-
-        val detector = FirebaseVision.getInstance().cloudTextRecognizer
-
-        recognizeText(detector, textImage)
+    companion object {
+        private const val IMAGE_PICK_CODE = 1000
+        private const val PERMISSION_CODE = 1001
     }
 }

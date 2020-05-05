@@ -7,4 +7,5 @@
     <string name="image_url">URL фото</string>
     <string name="image_for_recognition">Картинка для распознавания</string>
     <string name="text_copy_success">Текст скопирован в буфер обмена</string>
+    <string name="text_recognition_failed">Текст не распознан</string>
 </resources>

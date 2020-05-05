@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
                 android:text="@string/text_button"
-                android:onClick="onTextRecognized"
+                android:onClick="recognizeText"
                 android:textAllCaps="false"
                 style="@style/RoundedCornerButton"
         />
