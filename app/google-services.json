@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "569713801114",
+    "firebase_url": "https://textdetectorline.firebaseio.com",
+    "project_id": "textdetectorline",
+    "storage_bucket": "textdetectorline.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:569713801114:android:3fc6908fd4b8b72c262c23",
+        "android_client_info": {
+          "package_name": "ru.hawoline.textrecognizerline"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "569713801114-h5jrvh7eaikqvcthuvg4akns1nd0ur8m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLGUW99r_Lk4_yfTYV_RFK70wAcsJPRcU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "569713801114-h5jrvh7eaikqvcthuvg4akns1nd0ur8m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
