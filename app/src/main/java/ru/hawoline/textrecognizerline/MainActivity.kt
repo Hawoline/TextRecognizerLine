@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.BitmapDrawable
+import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -15,9 +16,11 @@ import android.view.View
 import android.widget.Toast
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
+import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.hawoline.textrecognizerline.util.TextProcessor
 import ru.hawoline.textrecognizerline.util.Updater
+import java.net.InetAddress
 
 class MainActivity : Activity() {
 
@@ -83,6 +86,21 @@ class MainActivity : Activity() {
         recognizeTextFromCloud()
     }
 
+    private fun recognizeTextFromCloud() {
+        val detector = FirebaseVision.getInstance().cloudTextRecognizer
+        val textImage = FirebaseVisionImage.fromBitmap((image_holder.drawable as BitmapDrawable).bitmap)
+
+        detector.processImage(textImage)
+            .addOnSuccessListener { firebaseVisionText ->
+                detected_text_view.text = TextProcessor.process(firebaseVisionText)
+            }
+            .addOnFailureListener{ e ->
+                Toast.makeText(this, R.string.text_recognition_failed, Toast.LENGTH_SHORT).show()
+            }
+
+        detector.close()
+    }
+
     fun copyText(view: View) {
         copyTextToClipBoard()
         Toast.makeText(this, getString(R.string.text_copy_success), Toast.LENGTH_SHORT).show()
@@ -101,21 +119,6 @@ class MainActivity : Activity() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
         startActivityForResult(intent, IMAGE_PICK_CODE)
-    }
-
-    private fun recognizeTextFromCloud() {
-        val detector = FirebaseVision.getInstance().cloudTextRecognizer
-        val textImage = FirebaseVisionImage.fromBitmap((image_holder.drawable as BitmapDrawable).bitmap)
-
-        detector.processImage(textImage)
-            .addOnSuccessListener { firebaseVisionText ->
-                detected_text_view.text = TextProcessor.process(firebaseVisionText)
-            }
-            .addOnFailureListener{ e ->
-                Toast.makeText(this, R.string.text_recognition_failed, Toast.LENGTH_SHORT).show()
-            }
-
-        detector.close()
     }
 
     companion object {
