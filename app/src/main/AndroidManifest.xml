@@ -21,11 +21,15 @@
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
         </activity>
 
         <meta-data
                 android:name="com.google.firebase.ml.vision.DEPENDENCIES"
-                android:value="text,face,label" />
+                android:value="text" />
     </application>
 
 </manifest>
