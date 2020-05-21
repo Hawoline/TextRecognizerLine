@@ -17,7 +17,7 @@ public final class Updater {
     private AppUpdateManager updateManager;
 
     public static final int UPDATE_REQUEST = 1003;
-    private static final int DAYS_FOR_FLEXIBLE_UPDATE = 3;
+    private static final int DAYS_FOR_FLEXIBLE_UPDATE = 3; // TODO: fix
 
     private Updater() {
 

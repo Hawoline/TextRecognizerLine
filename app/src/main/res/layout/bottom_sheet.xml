@@ -11,14 +11,6 @@
               app:layout_behavior="@string/bottom_sheet_behavior"
 >
 
-<!--    <TextView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="@dimen/bottom_sheet_peek_height"-->
-<!--            android:background="@color/colorAccent"-->
-<!--            android:gravity="center"-->
-<!--            android:text="@string/bottom_sheet_peek"-->
-<!--            android:drawableTop="@drawable/ic_eject_24dp"-->
-<!--            android:textColor="@android:color/white" />-->
     <ImageView
             android:layout_width="match_parent"
             android:layout_height="@dimen/bottom_sheet_peek_height"
